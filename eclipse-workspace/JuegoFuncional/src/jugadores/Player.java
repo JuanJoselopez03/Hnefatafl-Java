@@ -10,7 +10,7 @@ import tablero.Board;
  * @version 1
  * 
  */
-public class Player {
+public  class Player {
 
     protected String nombre;
     protected Token ficha;
@@ -44,7 +44,15 @@ public class Player {
         return ficha;
     }
 
-	public void realizarMovimiento(Board tablero) {
+
+	/**
+	 * Método que permite al jugador humano realizar un movimiento en el tablero. El
+	 * jugador introduce las coordenadas de la casilla de origen y destino desde la
+	 * consola.
+	 * 
+	 * @param tablero El tablero en el que se realiza el movimiento.
+	 */
+	public void realizarMovimiento(Board tablero, String nombreJugador) {
 		// TODO Auto-generated method stub
 		
 	}

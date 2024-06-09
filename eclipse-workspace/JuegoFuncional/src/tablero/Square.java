@@ -14,6 +14,7 @@ public class Square {
     private Token tipoPieza;
     private boolean estaOcupada;
     private String color; // Color de fondo de la casilla
+    private boolean movida;
 
     public Square() {
         this.tipoCasilla = SquareType.NORMAL;
@@ -53,5 +54,17 @@ public class Square {
 
     public void setColor(String color) {
         this.color = color;
+    }
+    
+    
+
+    // Otro código de la clase
+
+    public void setMovida(boolean movida) {
+        this.movida = movida;
+    }
+
+    public boolean isMovida() {
+        return movida;
     }
 }

@@ -1,6 +1,5 @@
 package partida;
 
-import partida.*;
 
 /**
  * Clase principal que ejecuta una partida del juego.

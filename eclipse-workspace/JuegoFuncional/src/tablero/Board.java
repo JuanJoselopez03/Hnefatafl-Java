@@ -1,6 +1,5 @@
 package tablero;
 
-import java.util.Scanner;
 import ficha.Token;
 import ficha.SquareType;
 import jugadores.Player;
@@ -13,10 +12,10 @@ import jugadores.Player;
  * @version 1
  */
 public class Board {
-	
+
 	/**
-	 * Matriz bidimensional que representa las casillas del tablero del juego.
-	 * Cada elemento de la matriz corresponde a una casilla en el tablero.
+	 * Matriz bidimensional que representa las casillas del tablero del juego. Cada
+	 * elemento de la matriz corresponde a una casilla en el tablero.
 	 * 
 	 * @see Square
 	 */
@@ -86,56 +85,59 @@ public class Board {
 	}
 
 	public void showBoard() {
-	    System.out.print("   ");
-	    for (int j = 0; j < 11; j++) {
-	        System.out.print(j + " ");
-	    }
-	    System.out.println();
+		System.out.print("   ");
+		for (int j = 0; j < 11; j++) {
+			System.out.print(j + " ");
+		}
+		System.out.println();
 
-	    String marronClaro = "\u001B[43m";
-	    String blanco = "\u001B[47m";
-	    String azul = "\u001B[44m";
-	    String cyan = "\u001B[46m";
-	    String magenta = "\u001B[45m";
-	    String reset = "\u001B[0m";
-	    String tipoPieza;
+		String reset = "\u001B[0m"; 
 
-	    for (int i = 0; i < 11; i++) {
-	        System.out.printf("%2d ", i); 
-	        for (int j = 0; j < 11; j++) {
-	            if (casillas[i][j].getTipoCasilla() == SquareType.ESQUINA || casillas[i][j].getTipoCasilla() == SquareType.TRONO) {
-	                System.out.print(azul); 
-	            } else if (casillas[i][j].getTipoCasilla() == SquareType.ORIGEN) {
-	                System.out.print(cyan); 
-	            } else if (casillas[i][j].getTipoCasilla() == SquareType.DESTINO) {
-	                System.out.print(magenta); 
-	            } else {
-	                if ((i + j) % 2 == 0) {
-	                    System.out.print(marronClaro);
-	                } else {
-	                    System.out.print(blanco);
-	                }
-	            }
+		for (int i = 0; i < 11; i++) {
+			System.out.printf("%2d ", i);
+			for (int j = 0; j < 11; j++) {
+				String colorFondo = "";
 
-	            if (casillas[i][j].getTipoPieza() != Token.EMPTY) {
-	                if (casillas[i][j].getTipoPieza() == Token.KING) {
-	                    tipoPieza = "R";
-	                } else if (casillas[i][j].getTipoPieza() == Token.ATTACKER) {
-	                    tipoPieza = "A";
-	                } else { 
-	                    tipoPieza = "D";
-	                }
-	                System.out.print(tipoPieza + " ");
-	            } else {
-	                System.out.print("  "); 
-	            }
-	            System.out.print(reset); 
-	        }
-	        System.out.println();
-	    }
+				if (casillas[i][j].getTipoCasilla() == SquareType.ESQUINA
+						|| casillas[i][j].getTipoCasilla() == SquareType.TRONO) {
+					colorFondo = "\u001B[44m"; 
+				} else if (casillas[i][j].getTipoCasilla() == SquareType.ORIGEN) {
+					colorFondo = "\u001B[46m"; 
+				} else if (casillas[i][j].getTipoCasilla() == SquareType.DESTINO) {
+					colorFondo = "\u001B[45m"; 
+				} else {
+					if ((i + j) % 2 == 0) {
+						colorFondo = "\u001B[43m"; 
+					} else {
+						colorFondo = "\u001B[47m"; 
+					}
+				}
+
+				if (casillas[i][j].isMovida()) {
+					colorFondo = "\u001B[41m"; 
+					casillas[i][j].setMovida(false); 
+				}
+
+				System.out.print(colorFondo);
+
+				String tipoPieza = "";
+				if (casillas[i][j].getTipoPieza() != Token.EMPTY) {
+					if (casillas[i][j].getTipoPieza() == Token.KING) {
+						tipoPieza = "R";
+					} else if (casillas[i][j].getTipoPieza() == Token.ATTACKER) {
+						tipoPieza = "A";
+					} else {
+						tipoPieza = "D";
+					}
+					System.out.print(tipoPieza + " ");
+				} else {
+					System.out.print("  ");
+				}
+				System.out.print(reset); 
+			}
+			System.out.println();
+		}
 	}
-
-
 
 	/**
 	 * Comprueba si un movimiento desde una casilla de origen a una casilla de
@@ -148,44 +150,44 @@ public class Board {
 	 * @return true si el movimiento es válido, false si no lo es.
 	 */
 	public boolean isValid(int filaOrigen, int columnaOrigen, int filaDestino, int columnaDestino) {
-	    // Verificar si la casilla de destino está dentro del tablero y no es una esquina
-	    if (filaDestino < 0 || filaDestino >= 11 || columnaDestino < 0 || columnaDestino >= 11 ||
-	        isCorner(filaDestino, columnaDestino)) {
-	        return false;
-	    }
+		if (filaDestino < 0 || filaDestino >= 11 || columnaDestino < 0 || columnaDestino >= 11
+				|| isCorner(filaDestino, columnaDestino)) {
+			return false;
+		}
 
-	    // Verificar si la casilla de destino está vacía
-	    if (casillas[filaDestino][columnaDestino].getTipoPieza() != Token.EMPTY) {
-	        return false;
-	    }
+		if (casillas[filaDestino][columnaDestino].getTipoCasilla() == SquareType.TRONO
+				&& casillas[filaOrigen][columnaOrigen].getTipoPieza() != Token.KING) {
+			return false;
+		}
 
-	    // Verificar si el movimiento es horizontal o vertical
-	    if (filaDestino != filaOrigen && columnaDestino != columnaOrigen) {
-	        return false;
-	    }
+		if (casillas[filaDestino][columnaDestino].getTipoPieza() != Token.EMPTY) {
+			return false;
+		}
 
-	    // Verificar si no hay fichas en el camino hacia la casilla de destino
-	    if (filaDestino == filaOrigen) { // Movimiento horizontal
-	        int minColumna = Math.min(columnaOrigen, columnaDestino);
-	        int maxColumna = Math.max(columnaOrigen, columnaDestino);
-	        for (int j = minColumna + 1; j < maxColumna; j++) {
-	            if (casillas[filaDestino][j].getTipoPieza() != Token.EMPTY) {
-	                return false; // Hay una ficha en el camino
-	            }
-	        }
-	    } else { // Movimiento vertical
-	        int minFila = Math.min(filaOrigen, filaDestino);
-	        int maxFila = Math.max(filaOrigen, filaDestino);
-	        for (int i = minFila + 1; i < maxFila; i++) {
-	            if (casillas[i][columnaDestino].getTipoPieza() != Token.EMPTY) {
-	                return false; // Hay una ficha en el camino
-	            }
-	        }
-	    }
+		if (filaDestino != filaOrigen && columnaDestino != columnaOrigen) {
+			return false;
+		}
 
-	    return true;
+		if (filaDestino == filaOrigen) { // Movimiento horizontal
+			int minColumna = Math.min(columnaOrigen, columnaDestino);
+			int maxColumna = Math.max(columnaOrigen, columnaDestino);
+			for (int j = minColumna + 1; j < maxColumna; j++) {
+				if (casillas[filaDestino][j].getTipoPieza() != Token.EMPTY) {
+					return false; // Hay una ficha en el camino
+				}
+			}
+		} else { // Movimiento vertical
+			int minFila = Math.min(filaOrigen, filaDestino);
+			int maxFila = Math.max(filaOrigen, filaDestino);
+			for (int i = minFila + 1; i < maxFila; i++) {
+				if (casillas[i][columnaDestino].getTipoPieza() != Token.EMPTY) {
+					return false; // Hay una ficha en el camino
+				}
+			}
+		}
+
+		return true;
 	}
-
 
 	/**
 	 * Metodo que realiza el movimiento de una ficha desde una casilla de origen a
@@ -197,44 +199,46 @@ public class Board {
 	 * @param columnaDestino La columna de la casilla de destino.
 	 */
 	public void moveToken(int filaOrigen, int columnaOrigen, int filaDestino, int columnaDestino) {
-	    if (!isValid(filaOrigen, columnaOrigen, filaDestino, columnaDestino)) {
-	        System.out.println("Movimiento inválido. Intente de nuevo.");
-	        return; // Salir del método si el movimiento es inválido
-	    }
+		if (!isValid(filaOrigen, columnaOrigen, filaDestino, columnaDestino)) {
+			System.out.println("Movimiento inválido. Intente de nuevo.");
+			return; // Salir del método si el movimiento es inválido
+		}
 
-	    // Guardar los estados originales de las casillas
-	    SquareType estadoOriginalOrigen = casillas[filaOrigen][columnaOrigen].getTipoCasilla();
-	    SquareType estadoOriginalDestino = casillas[filaDestino][columnaDestino].getTipoCasilla();
+		// Guardar los estados originales de las casillas
+		SquareType estadoOriginalOrigen = casillas[filaOrigen][columnaOrigen].getTipoCasilla();
+		SquareType estadoOriginalDestino = casillas[filaDestino][columnaDestino].getTipoCasilla();
 
-	    // Realizar el movimiento
-	    Token tipoPieza = casillas[filaOrigen][columnaOrigen].getTipoPieza();
-	    casillas[filaDestino][columnaDestino].setTipoPieza(tipoPieza);
-	    casillas[filaOrigen][columnaOrigen].setTipoPieza(Token.EMPTY);
+		// Realizar el movimiento
+		Token tipoPieza = casillas[filaOrigen][columnaOrigen].getTipoPieza();
+		casillas[filaDestino][columnaDestino].setTipoPieza(tipoPieza);
+		casillas[filaOrigen][columnaOrigen].setTipoPieza(Token.EMPTY);
 
-	    // Cambiar color de las casillas involucradas en el movimiento
-	    casillas[filaOrigen][columnaOrigen].setTipoCasilla(SquareType.ORIGEN);
-	    casillas[filaDestino][columnaDestino].setTipoCasilla(SquareType.DESTINO);
+		// Cambiar color de las casillas involucradas en el movimiento
+		casillas[filaOrigen][columnaOrigen].setTipoCasilla(SquareType.ORIGEN);
+		casillas[filaDestino][columnaDestino].setTipoCasilla(SquareType.DESTINO);
 
-	    // Imprimir el tablero después del movimiento
-	    showBoard();
+		// Imprimir el tablero después del movimiento
+		showBoard();
 
-	    // Restaurar estados originales de las casillas
-	    casillas[filaOrigen][columnaOrigen].setTipoCasilla(estadoOriginalOrigen);
-	    casillas[filaDestino][columnaDestino].setTipoCasilla(estadoOriginalDestino);
+		// Restaurar estados originales de las casillas
+		casillas[filaOrigen][columnaOrigen].setTipoCasilla(estadoOriginalOrigen);
+		casillas[filaDestino][columnaDestino].setTipoCasilla(estadoOriginalDestino);
+		casillas[filaDestino][columnaDestino].setMovida(true);
+
 	}
 
-	
 	/**
-     * Cambia el color de fondo de una casilla después de que se haya movido una ficha.
-     * 
-     * @param fila    La fila de la casilla.
-     * @param columna La columna de la casilla.
-     * @param colorFondoDestino   El color de fondo que se desea aplicar (por ejemplo, "\u001B[46m" para cyan).
-     */
-    public void changeColor(int fila, int columna, String colorFondoDestino) {
-        casillas[fila][columna].setTipoCasilla(SquareType.ESQUINA);
-    }
-
+	 * Cambia el color de fondo de una casilla después de que se haya movido una
+	 * ficha.
+	 * 
+	 * @param fila              La fila de la casilla.
+	 * @param columna           La columna de la casilla.
+	 * @param colorFondoDestino El color de fondo que se desea aplicar (por ejemplo,
+	 *                          "\u001B[46m" para cyan).
+	 */
+	public void changeColor(int fila, int columna, String colorFondoDestino) {
+		casillas[fila][columna].setTipoCasilla(SquareType.ESQUINA);
+	}
 
 	/**
 	 * Verifica si una ficha en la posición dada está siendo capturada por el
@@ -244,6 +248,7 @@ public class Board {
 	 * @param columna La columna de la casilla donde se encuentra la ficha.
 	 * @return true si la ficha está siendo capturada, false de lo contrario.
 	 */
+	@SuppressWarnings("unused")
 	public boolean isCapturated(int fila, int columna) {
 		Player jugador = null;
 
@@ -313,7 +318,7 @@ public class Board {
 	 * 
 	 * @return true si el juego ha terminado, false si no.
 	 */
-	
+
 	public boolean lastGame() {
 		int atacantes = 0;
 		int defensores = 0;
